@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -89,7 +90,12 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+
   VL53L1X sensor1;
   VL53L1X sensor2;
   VL53L1X sensor3;
@@ -114,23 +120,40 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  distance = TOF_GetDistance(&sensor1);
-	  sprintf(distanceStr, "Distance 1: %d\n\r", distance);
-	  HAL_UART_Transmit(&huart2, distanceStr, strlen(distanceStr), 100);
+//	  distance = TOF_GetDistance(&sensor1);
+//	  sprintf(distanceStr, "Distance 1: %d\n\r", distance);
+//	  HAL_UART_Transmit(&huart2, distanceStr, strlen(distanceStr), 100);
+//
+//	  HAL_Delay(500);
+//
+//	  distance = TOF_GetDistance(&sensor2);
+//	  sprintf(distanceStr, "Distance 2: %d\n\r", distance);
+//	  HAL_UART_Transmit(&huart2, distanceStr, strlen(distanceStr), 100);
+//
+//	  HAL_Delay(500);
+//
+//	  distance = TOF_GetDistance(&sensor3);
+//	  sprintf(distanceStr, "Distance 3: %d\n\r", distance);
+//	  HAL_UART_Transmit(&huart2, distanceStr, strlen(distanceStr), 100);
 
-	  HAL_Delay(500);
+	  HAL_Delay(5000);
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 50);
+	  HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 1);
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 300);
+	  HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 1);
 
-	  distance = TOF_GetDistance(&sensor2);
-	  sprintf(distanceStr, "Distance 2: %d\n\r", distance);
-	  HAL_UART_Transmit(&huart2, distanceStr, strlen(distanceStr), 100);
+	  HAL_Delay(5000);
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 300);
+	  HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 0);
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 50);
+	  HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 0);
 
-	  HAL_Delay(500);
+	  //HAL_Delay(500);
 
-	  distance = TOF_GetDistance(&sensor3);
-	  sprintf(distanceStr, "Distance 3: %d\n\r", distance);
-	  HAL_UART_Transmit(&huart2, distanceStr, strlen(distanceStr), 100);
+	  //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75);
+	  //HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, 1);
 
-	  HAL_Delay(500);
+	  //HAL_Delay(500);
 
     /* USER CODE END WHILE */
 
