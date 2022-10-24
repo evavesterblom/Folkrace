@@ -64,7 +64,79 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+VL53L1X sensor1;
+VL53L1X sensor2;
+VL53L1X sensor3;
 
+enum State {
+	DRIVE,
+	REVERSE
+};
+
+void init() {
+	  HAL_TIM_Base_Start(&htim3);
+	  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+	  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+
+	  TOF_InitStruct(&sensor1, &hi2c1, 0x32, TOF_1_GPIO_Port, TOF_1_Pin);
+	  TOF_InitStruct(&sensor2, &hi2c1, 0x33, TOF_2_GPIO_Port, TOF_2_Pin);
+	  TOF_InitStruct(&sensor3, &hi2c1, 0x34, TOF_3_GPIO_Port, TOF_3_Pin);
+
+	  TOF_TurnOff(&sensor1);
+	  TOF_TurnOff(&sensor2);
+	  TOF_TurnOff(&sensor3);
+
+	  TOF_BootSensor(&sensor1);
+	  TOF_BootSensor(&sensor2);
+	  TOF_BootSensor(&sensor3);
+}
+
+char distanceStr1[200] = "wasd";
+char distanceStr2[200] = "wasd";
+char distanceStr3[200] = "wasd";
+uint16_t dist1 = 0;
+uint16_t dist2 = 0;
+uint16_t dist3 = 0;
+
+void sense() {
+	  //TOF kuulamine
+	dist1 = TOF_GetDistance(&sensor1);
+	dist2 = TOF_GetDistance(&sensor2);
+	dist3 = TOF_GetDistance(&sensor3);
+}
+
+void plan() {
+
+}
+
+void act() {
+	sprintf(distanceStr1, "Distance 1: %d\n\r", dist1);
+	sprintf(distanceStr2, "Distance 2: %d\n\r", dist2);
+	sprintf(distanceStr3, "Distance 3: %d\n\r", dist3);
+
+	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr1, strlen(distanceStr1), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr2, strlen(distanceStr2), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr3, strlen(distanceStr3), 100);
+    // mootorite juhtimine
+	 // HAL_Delay(5000);
+	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 50);
+	 // HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 1);
+	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 300);
+	 // HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 1);
+
+	  // HAL_Delay(5000);
+	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 300);
+	 // HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 0);
+	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 50);
+	 // HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 0);
+
+	  //HAL_Delay(500);
+
+	  //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75);
+	  //HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, 1);
+
+	  //HAL_Delay(500);
+}
 /* USER CODE END 0 */
 
 /**
@@ -99,73 +171,18 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim3);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  init();
 
-  VL53L1X sensor1;
-  VL53L1X sensor2;
-  VL53L1X sensor3;
-
-  TOF_InitStruct(&sensor1, &hi2c1, 0x32, TOF_1_GPIO_Port, TOF_1_Pin);
-  TOF_InitStruct(&sensor2, &hi2c1, 0x33, TOF_2_GPIO_Port, TOF_2_Pin);
-  TOF_InitStruct(&sensor3, &hi2c1, 0x34, TOF_3_GPIO_Port, TOF_3_Pin);
-
-  TOF_TurnOff(&sensor1);
-  TOF_TurnOff(&sensor2);
-  TOF_TurnOff(&sensor3);
-
-  TOF_BootSensor(&sensor1);
-  TOF_BootSensor(&sensor2);
-  TOF_BootSensor(&sensor3);
-
-  char distanceStr[200] = "wasd";
-  uint16_t distance = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //TOF kuulamine
-	  distance = TOF_GetDistance(&sensor1);
-	  sprintf(distanceStr, "Distance 1: %d\n\r", distance);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr, strlen(distanceStr), 100);
-
+	  sense();
+	  plan();
+	  act();
 	  HAL_Delay(500);
-
-	  distance = TOF_GetDistance(&sensor2);
-	  sprintf(distanceStr, "Distance 2: %d\n\r", distance);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr, strlen(distanceStr), 100);
-
-	  HAL_Delay(500);
-
-	  distance = TOF_GetDistance(&sensor3);
-	  sprintf(distanceStr, "Distance 3: %d\n\r", distance);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr, strlen(distanceStr), 100);
-
-
-
-     // mootorite juhtimine
-	 // HAL_Delay(5000);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 50);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 1);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 300);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 1);
-
-	  // HAL_Delay(5000);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 300);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 0);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 50);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 0);
-
-	  //HAL_Delay(500);
-
-	  //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75);
-	  //HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, 1);
-
-	  //HAL_Delay(500);
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
