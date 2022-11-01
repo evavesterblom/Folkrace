@@ -64,14 +64,32 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/* GLOBAL VARIABLES */
 VL53L1X sensor1;
 VL53L1X sensor2;
 VL53L1X sensor3;
 
 enum State {
-	DRIVE,
-	REVERSE
+	DRIVE = 1,
+	REVERSE = 0
 };
+
+char distanceStr1[200] = "wasd";
+char distanceStr2[200] = "wasd";
+char distanceStr3[200] = "wasd";
+uint16_t dist1 = 0;
+uint16_t dist2 = 0;
+uint16_t dist3 = 0;
+
+// motors speed (max 1000)
+int left_speed = 200;
+int right_speed = 200;
+
+// 1 -  forward | 0 - backwards
+int left_dir = DRIVE;
+int right_dir = DRIVE;
+
 
 void init() {
 	  HAL_TIM_Base_Start(&htim3);
@@ -91,21 +109,55 @@ void init() {
 	  TOF_BootSensor(&sensor3);
 }
 
-char distanceStr1[200] = "wasd";
-char distanceStr2[200] = "wasd";
-char distanceStr3[200] = "wasd";
-uint16_t dist1 = 0;
-uint16_t dist2 = 0;
-uint16_t dist3 = 0;
+int min_dist1 = 50;
+int min_dist2 = 100;
+
+int slow_speed = 100;
+int fast_speed = 200;
+
+void drive() {
+	if (dist2 < min_dist1) {
+		left_speed = slow_speed;
+		right_speed = slow_speed;
+		left_dir = DRIVE;
+		right_dir = REVERSE;
+	} else if (dist1 < min_dist1) {
+		left_speed = slow_speed;
+		right_speed = slow_speed;
+		left_dir = DRIVE;
+		right_dir = REVERSE;
+	} else if (dist3 < min_dist1) {
+		left_speed = slow_speed;
+		right_speed = slow_speed;
+		left_dir = REVERSE;
+		right_dir = DRIVE;
+	} else if (dist1 < min_dist2) {
+		left_speed = fast_speed;
+		right_speed = slow_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+	} else if(dist3 < min_dist2) {
+		left_speed = slow_speed;
+		right_speed = fast_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+	} else {
+		left_speed = fast_speed;
+		right_speed = fast_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+	}
+}
 
 void sense() {
-	  //TOF kuulamine
+	//TOF kuulamine
 	dist1 = TOF_GetDistance(&sensor1);
 	dist2 = TOF_GetDistance(&sensor2);
 	dist3 = TOF_GetDistance(&sensor3);
 }
 
 void plan() {
+	drive();
 
 }
 
@@ -117,25 +169,12 @@ void act() {
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr1, strlen(distanceStr1), 100);
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr2, strlen(distanceStr2), 100);
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr3, strlen(distanceStr3), 100);
-    // mootorite juhtimine
-	 // HAL_Delay(5000);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 50);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 1);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 300);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 1);
 
-	  // HAL_Delay(5000);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 300);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, 0);
-	 // __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 50);
-	 // HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, 0);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, left_speed);
+	HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, left_dir);
 
-	  //HAL_Delay(500);
-
-	  //__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 75);
-	  //HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, 1);
-
-	  //HAL_Delay(500);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, right_speed);
+	HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, right_dir);
 }
 /* USER CODE END 0 */
 
@@ -182,7 +221,7 @@ int main(void)
 	  sense();
 	  plan();
 	  act();
-	  HAL_Delay(500);
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
