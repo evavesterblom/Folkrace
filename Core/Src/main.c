@@ -23,9 +23,6 @@
 #include "usart.h"
 #include "gpio.h"
 
-
-
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "VL53L1X.h"
@@ -70,10 +67,17 @@ VL53L1X sensor1;
 VL53L1X sensor2;
 VL53L1X sensor3;
 
+// Car states
 enum State {
 	DRIVE = 1,
 	REVERSE = 0
 };
+
+// Constants
+int SERVO_MIN_VALUE = 550;
+int SERVO_MID_VALUE = 1220;
+int SERVO_MAX_VALUE = 1940;
+// how to set servo position: __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 1220);
 
 char distanceStr1[200] = "wasd";
 char distanceStr2[200] = "wasd";
@@ -92,21 +96,25 @@ int right_dir = DRIVE;
 
 
 void init() {
-	  HAL_TIM_Base_Start(&htim3);
-	  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-	  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	// Motor PWM signals
+	HAL_TIM_Base_Start(&htim3);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	// Servo PWM Signal
+	HAL_TIM_Base_Start(&htim14);
+	HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
 
-	  TOF_InitStruct(&sensor1, &hi2c1, 0x32, TOF_1_GPIO_Port, TOF_1_Pin);
-	  TOF_InitStruct(&sensor2, &hi2c1, 0x33, TOF_2_GPIO_Port, TOF_2_Pin);
-	  TOF_InitStruct(&sensor3, &hi2c1, 0x34, TOF_3_GPIO_Port, TOF_3_Pin);
+	TOF_InitStruct(&sensor1, &hi2c1, 0x32, TOF_1_GPIO_Port, TOF_1_Pin);
+	TOF_InitStruct(&sensor2, &hi2c1, 0x33, TOF_2_GPIO_Port, TOF_2_Pin);
+	TOF_InitStruct(&sensor3, &hi2c1, 0x34, TOF_3_GPIO_Port, TOF_3_Pin);
 
-	  TOF_TurnOff(&sensor1);
-	  TOF_TurnOff(&sensor2);
-	  TOF_TurnOff(&sensor3);
+	TOF_TurnOff(&sensor1);
+	TOF_TurnOff(&sensor2);
+	TOF_TurnOff(&sensor3);
 
-	  TOF_BootSensor(&sensor1);
-	  TOF_BootSensor(&sensor2);
-	  TOF_BootSensor(&sensor3);
+	TOF_BootSensor(&sensor1);
+	TOF_BootSensor(&sensor2);
+	TOF_BootSensor(&sensor3);
 }
 
 int min_dist1 = 50;
@@ -209,6 +217,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_TIM3_Init();
+  MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
   init();
 
