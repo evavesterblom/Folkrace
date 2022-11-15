@@ -4,5 +4,5 @@
 ../Core/Src/main.c:167:6:plan	8	static
 ../Core/Src/main.c:172:6:act	8	static
 ../Core/Src/main.c:193:5:main	8	static
-../Core/Src/main.c:245:6:SystemClock_Config	96	static
-../Core/Src/main.c:294:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:246:6:SystemClock_Config	96	static
+../Core/Src/main.c:295:6:Error_Handler	8	static,ignoring_inline_asm

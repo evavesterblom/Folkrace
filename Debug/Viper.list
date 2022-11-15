@@ -9,27 +9,27 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   2 .rodata       00000104  08004bb8  08004bb8  00014bb8  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  08004cbc  08004cbc  000202e8  2**0
+  3 .ARM.extab    00000000  08004cbc  08004cbc  000202e4  2**0
                   CONTENTS
-  4 .ARM          00000000  08004cbc  08004cbc  000202e8  2**0
+  4 .ARM          00000000  08004cbc  08004cbc  000202e4  2**0
                   CONTENTS
-  5 .preinit_array 00000000  08004cbc  08004cbc  000202e8  2**0
+  5 .preinit_array 00000000  08004cbc  08004cbc  000202e4  2**0
                   CONTENTS, ALLOC, LOAD, DATA
   6 .init_array   00000004  08004cbc  08004cbc  00014cbc  2**2
                   CONTENTS, ALLOC, LOAD, DATA
   7 .fini_array   00000004  08004cc0  08004cc0  00014cc0  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .data         000002e8  20000000  08004cc4  00020000  2**2
+  8 .data         000002e4  20000000  08004cc4  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          000002d0  200002e8  08004fac  000202e8  2**2
+  9 .bss          000002d4  200002e4  08004fa8  000202e4  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  200005b8  08004fac  000205b8  2**0
+ 10 ._user_heap_stack 00000600  200005b8  08004fa8  000205b8  2**0
                   ALLOC
- 11 .ARM.attributes 00000028  00000000  00000000  000202e8  2**0
+ 11 .ARM.attributes 00000028  00000000  00000000  000202e4  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00012977  00000000  00000000  00020310  2**0
+ 12 .debug_info   00012977  00000000  00000000  0002030c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000028c9  00000000  00000000  00032c87  2**0
+ 13 .debug_abbrev 000028c9  00000000  00000000  00032c83  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  14 .debug_aranges 000010d0  00000000  00000000  00035550  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -63,7 +63,7 @@ Disassembly of section .text:
  80000d6:	2301      	movs	r3, #1
  80000d8:	7023      	strb	r3, [r4, #0]
  80000da:	bd10      	pop	{r4, pc}
- 80000dc:	200002e8 	.word	0x200002e8
+ 80000dc:	200002e4 	.word	0x200002e4
  80000e0:	00000000 	.word	0x00000000
  80000e4:	08004ba0 	.word	0x08004ba0
 
@@ -79,7 +79,7 @@ Disassembly of section .text:
  80000f8:	bd10      	pop	{r4, pc}
  80000fa:	46c0      	nop			; (mov r8, r8)
  80000fc:	00000000 	.word	0x00000000
- 8000100:	200002ec 	.word	0x200002ec
+ 8000100:	200002e8 	.word	0x200002e8
  8000104:	08004ba0 	.word	0x08004ba0
 
 08000108 <strlen>:
@@ -560,7 +560,7 @@ void MX_I2C1_Init(void)
  800040a:	46c0      	nop			; (mov r8, r8)
  800040c:	46bd      	mov	sp, r7
  800040e:	bd80      	pop	{r7, pc}
- 8000410:	20000304 	.word	0x20000304
+ 8000410:	20000300 	.word	0x20000300
  8000414:	40005400 	.word	0x40005400
  8000418:	2000090e 	.word	0x2000090e
 
@@ -671,8 +671,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 
 080004b8 <init>:
 // 1 -  forward | 0 - backwards
-int left_dir = DRIVE;
-int right_dir = DRIVE;
+int left_dir = 1;
+int right_dir = 0;
 
 
 void init() {
@@ -769,10 +769,10 @@ void init() {
  8000560:	2000038c 	.word	0x2000038c
  8000564:	200003d4 	.word	0x200003d4
  8000568:	48000400 	.word	0x48000400
- 800056c:	20000304 	.word	0x20000304
- 8000570:	20000350 	.word	0x20000350
- 8000574:	20000360 	.word	0x20000360
- 8000578:	20000370 	.word	0x20000370
+ 800056c:	20000300 	.word	0x20000300
+ 8000570:	2000034c 	.word	0x2000034c
+ 8000574:	2000035c 	.word	0x2000035c
+ 8000578:	2000036c 	.word	0x2000036c
 
 0800057c <drive>:
 int min_dist2 = 100;
@@ -951,17 +951,17 @@ void drive() {
  800067a:	46bd      	mov	sp, r7
  800067c:	bd80      	pop	{r7, pc}
  800067e:	46c0      	nop			; (mov r8, r8)
- 8000680:	20000382 	.word	0x20000382
- 8000684:	20000268 	.word	0x20000268
- 8000688:	20000270 	.word	0x20000270
+ 8000680:	2000037e 	.word	0x2000037e
+ 8000684:	20000264 	.word	0x20000264
+ 8000688:	2000026c 	.word	0x2000026c
  800068c:	20000258 	.word	0x20000258
  8000690:	2000025c 	.word	0x2000025c
  8000694:	20000260 	.word	0x20000260
- 8000698:	20000264 	.word	0x20000264
- 800069c:	20000380 	.word	0x20000380
- 80006a0:	20000384 	.word	0x20000384
- 80006a4:	2000026c 	.word	0x2000026c
- 80006a8:	20000274 	.word	0x20000274
+ 8000698:	20000384 	.word	0x20000384
+ 800069c:	2000037c 	.word	0x2000037c
+ 80006a0:	20000380 	.word	0x20000380
+ 80006a4:	20000268 	.word	0x20000268
+ 80006a8:	20000270 	.word	0x20000270
 
 080006ac <sense>:
 
@@ -998,12 +998,12 @@ void sense() {
  80006e2:	46bd      	mov	sp, r7
  80006e4:	bd80      	pop	{r7, pc}
  80006e6:	46c0      	nop			; (mov r8, r8)
- 80006e8:	20000350 	.word	0x20000350
- 80006ec:	20000380 	.word	0x20000380
- 80006f0:	20000360 	.word	0x20000360
- 80006f4:	20000382 	.word	0x20000382
- 80006f8:	20000370 	.word	0x20000370
- 80006fc:	20000384 	.word	0x20000384
+ 80006e8:	2000034c 	.word	0x2000034c
+ 80006ec:	2000037c 	.word	0x2000037c
+ 80006f0:	2000035c 	.word	0x2000035c
+ 80006f4:	2000037e 	.word	0x2000037e
+ 80006f8:	2000036c 	.word	0x2000036c
+ 80006fc:	20000380 	.word	0x20000380
 
 08000700 <plan>:
 
@@ -1113,13 +1113,13 @@ void act() {
  80007ba:	46c0      	nop			; (mov r8, r8)
  80007bc:	46bd      	mov	sp, r7
  80007be:	bd80      	pop	{r7, pc}
- 80007c0:	20000380 	.word	0x20000380
+ 80007c0:	2000037c 	.word	0x2000037c
  80007c4:	08004bb8 	.word	0x08004bb8
  80007c8:	20000000 	.word	0x20000000
- 80007cc:	20000382 	.word	0x20000382
+ 80007cc:	2000037e 	.word	0x2000037e
  80007d0:	08004bcc 	.word	0x08004bcc
  80007d4:	200000c8 	.word	0x200000c8
- 80007d8:	20000384 	.word	0x20000384
+ 80007d8:	20000380 	.word	0x20000380
  80007dc:	08004be0 	.word	0x08004be0
  80007e0:	20000190 	.word	0x20000190
  80007e4:	2000041c 	.word	0x2000041c
@@ -1128,7 +1128,7 @@ void act() {
  80007f0:	20000260 	.word	0x20000260
  80007f4:	48000800 	.word	0x48000800
  80007f8:	2000025c 	.word	0x2000025c
- 80007fc:	20000264 	.word	0x20000264
+ 80007fc:	20000384 	.word	0x20000384
 
 08000800 <main>:
 /**
@@ -1182,6 +1182,7 @@ int main(void)
  8000828:	f7ff ff6a 	bl	8000700 <plan>
 	  act();
  800082c:	f7ff ff70 	bl	8000710 <act>
+
 	  HAL_Delay(1000);
  8000830:	23fa      	movs	r3, #250	; 0xfa
  8000832:	009b      	lsls	r3, r3, #2
@@ -2359,11 +2360,11 @@ LoopForever:
   ldr r0, =_sdata
  8000dfc:	20000000 	.word	0x20000000
   ldr r1, =_edata
- 8000e00:	200002e8 	.word	0x200002e8
+ 8000e00:	200002e4 	.word	0x200002e4
   ldr r2, =_sidata
  8000e04:	08004cc4 	.word	0x08004cc4
   ldr r2, =_sbss
- 8000e08:	200002e8 	.word	0x200002e8
+ 8000e08:	200002e4 	.word	0x200002e4
   ldr r4, =_ebss
  8000e0c:	200005b8 	.word	0x200005b8
 
@@ -2485,9 +2486,9 @@ __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
  8000e92:	46bd      	mov	sp, r7
  8000e94:	b003      	add	sp, #12
  8000e96:	bd90      	pop	{r4, r7, pc}
- 8000e98:	20000278 	.word	0x20000278
- 8000e9c:	20000280 	.word	0x20000280
- 8000ea0:	2000027c 	.word	0x2000027c
+ 8000e98:	20000274 	.word	0x20000274
+ 8000e9c:	2000027c 	.word	0x2000027c
+ 8000ea0:	20000278 	.word	0x20000278
 
 08000ea4 <HAL_IncTick>:
   * @note This function is declared as __weak to be overwritten in case of other 
@@ -2512,7 +2513,7 @@ __weak void HAL_IncTick(void)
  8000eba:	46bd      	mov	sp, r7
  8000ebc:	bd80      	pop	{r7, pc}
  8000ebe:	46c0      	nop			; (mov r8, r8)
- 8000ec0:	20000280 	.word	0x20000280
+ 8000ec0:	2000027c 	.word	0x2000027c
  8000ec4:	200004a0 	.word	0x200004a0
 
 08000ec8 <HAL_GetTick>:
@@ -2586,7 +2587,7 @@ __weak void HAL_Delay(uint32_t Delay)
  8000f1a:	b004      	add	sp, #16
  8000f1c:	bd80      	pop	{r7, pc}
  8000f1e:	46c0      	nop			; (mov r8, r8)
- 8000f20:	20000280 	.word	0x20000280
+ 8000f20:	2000027c 	.word	0x2000027c
 
 08000f24 <__NVIC_SetPriority>:
   \param [in]      IRQn  Interrupt number.
@@ -6797,7 +6798,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  80025d4:	00001388 	.word	0x00001388
  80025d8:	fffff8ff 	.word	0xfffff8ff
  80025dc:	08004c14 	.word	0x08004c14
- 80025e0:	20000278 	.word	0x20000278
+ 80025e0:	20000274 	.word	0x20000274
 
 080025e4 <HAL_RCC_GetSysClockFreq>:
   *         right SYSCLK value. Otherwise, any configuration based on this function will be incorrect.
@@ -6966,7 +6967,7 @@ uint32_t HAL_RCC_GetHCLKFreq(void)
  80026b6:	46bd      	mov	sp, r7
  80026b8:	bd80      	pop	{r7, pc}
  80026ba:	46c0      	nop			; (mov r8, r8)
- 80026bc:	20000278 	.word	0x20000278
+ 80026bc:	20000274 	.word	0x20000274
 
 080026c0 <HAL_RCC_GetPCLK1Freq>:
   * @note   Each time PCLK1 changes, this function must be called to update the
@@ -11913,7 +11914,7 @@ uint16_t TOF_GetDistance(VL53L1X* const sensor) {
  800426a:	6818      	ldr	r0, [r3, #0]
  800426c:	4770      	bx	lr
  800426e:	46c0      	nop			; (mov r8, r8)
- 8004270:	20000284 	.word	0x20000284
+ 8004270:	20000280 	.word	0x20000280
 
 08004274 <__libc_init_array>:
  8004274:	b570      	push	{r4, r5, r6, lr}
@@ -11997,7 +11998,7 @@ uint16_t TOF_GetDistance(VL53L1X* const sensor) {
  8004310:	4718      	bx	r3
  8004312:	46c0      	nop			; (mov r8, r8)
  8004314:	7fffffff 	.word	0x7fffffff
- 8004318:	20000284 	.word	0x20000284
+ 8004318:	20000280 	.word	0x20000280
  800431c:	ffff0208 	.word	0xffff0208
 
 08004320 <__ssputs_r>:

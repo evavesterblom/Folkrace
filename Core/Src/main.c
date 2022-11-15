@@ -74,9 +74,9 @@ enum State {
 };
 
 // Constants
-int SERVO_MIN_VALUE = 550;
-int SERVO_MID_VALUE = 1220;
-int SERVO_MAX_VALUE = 1940;
+int SERVO_MIN_VALUE = 1325;
+int SERVO_MID_VALUE = 1450;
+int SERVO_MAX_VALUE = 1575;
 // how to set servo position: __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 1220);
 
 char distanceStr1[200] = "wasd";
@@ -91,8 +91,8 @@ int left_speed = 200;
 int right_speed = 200;
 
 // 1 -  forward | 0 - backwards
-int left_dir = DRIVE;
-int right_dir = DRIVE;
+int left_dir = 1;
+int right_dir = 0;
 
 
 void init() {
@@ -230,6 +230,7 @@ int main(void)
 	  sense();
 	  plan();
 	  act();
+
 	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
