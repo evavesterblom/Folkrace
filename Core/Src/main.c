@@ -247,6 +247,7 @@ void sense() {
 
 void plan() {
 	//drive_by_motor_speed();
+	drive_by_servo();
 
 }
 
