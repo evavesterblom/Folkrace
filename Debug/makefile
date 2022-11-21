@@ -62,8 +62,8 @@ all: main-build
 main-build: Viper.elf secondary-outputs
 
 # Tool invocations
-Viper.elf Viper.map: $(OBJS) $(USER_OBJS) D:\STM32CubeIDE\Viper\STM32F030R8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Viper.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"D:\STM32CubeIDE\Viper\STM32F030R8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Viper.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Viper.elf Viper.map: $(OBJS) $(USER_OBJS) C:\Users\Kasutaja\Documents\Robotiklubi\viper\STM32F030R8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Viper.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"C:\Users\Kasutaja\Documents\Robotiklubi\viper\STM32F030R8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Viper.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

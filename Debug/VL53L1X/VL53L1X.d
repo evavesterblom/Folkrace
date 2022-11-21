@@ -29,9 +29,10 @@ VL53L1X/VL53L1X.o: ../VL53L1X/VL53L1X.c ../VL53L1X/VL53L1X.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- ../Core/Inc/gpio.h D:/STM32CubeIDE/Viper/VL53L1X/Inc/VL53L1X_api.h \
- D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_platform.h \
- D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_types.h
+ ../Core/Inc/gpio.h \
+ C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/VL53L1X_api.h \
+ C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_platform.h \
+ C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_types.h
 ../VL53L1X/VL53L1X.h:
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
@@ -65,6 +66,6 @@ VL53L1X/VL53L1X.o: ../VL53L1X/VL53L1X.c ../VL53L1X/VL53L1X.h \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
 ../Core/Inc/gpio.h:
-D:/STM32CubeIDE/Viper/VL53L1X/Inc/VL53L1X_api.h:
-D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_platform.h:
-D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_types.h:
+C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/VL53L1X_api.h:
+C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_platform.h:
+C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_types.h:

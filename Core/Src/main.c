@@ -94,6 +94,8 @@ int right_speed = 200;
 int left_dir = 1;
 int right_dir = 0;
 
+// servo angle
+int servo = 1450;
 
 void init() {
 	// Motor PWM signals
@@ -123,7 +125,7 @@ int min_dist2 = 100;
 int slow_speed = 100;
 int fast_speed = 200;
 
-void drive() {
+void drive_by_motor_speed() {
 	if (dist2 < min_dist1) {
 		left_speed = slow_speed;
 		right_speed = slow_speed;
@@ -157,6 +159,85 @@ void drive() {
 	}
 }
 
+void correct() {
+	if (servo > SERVO_MAX_VALUE) {
+		servo = SERVO_MAX_VALUE;
+	}
+
+	if (servo < SERVO_MIN_VALUE) {
+		servo = SERVO_MIN_VALUE;
+	}
+
+	if (left_speed > 1000) {
+		left_speed = 1000;
+	}
+
+	if (right_speed > 1000) {
+		right_speed = 1000;
+	}
+
+}
+
+int servo_min_dist = 50;
+int servo_mid_dist = 100;
+int servo_max_dist = 150;
+
+int motor_very_slow_speed = 70;
+int motor_slow_speed = 100;
+int motor_mid_speed = 150;
+int motor_high_speed = 200;
+
+void drive_by_servo() {
+	// seinad on kaugel, sõidab otse
+	if (dist1 > servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
+		servo = SERVO_MID_VALUE;
+		left_speed = motor_high_speed;
+		right_speed = motor_high_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+
+	// natuke lähedal vasakule servale, keerab natuke paremale
+	} else if (dist1 < servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
+		servo = SERVO_MID_VALUE + 50;
+		left_speed = motor_mid_speed;
+		right_speed = motor_mid_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+
+	// natuke lähedal paremale servale, keerab natuke vasakule
+	}else if (dist1 > servo_max_dist && dist2 > servo_max_dist && dist3 < servo_max_dist) {
+		servo = SERVO_MID_VALUE - 50;
+		left_speed = motor_mid_speed;
+		right_speed = motor_mid_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+
+	// väga lähedal vasakule servale, keerab rohkem paremale
+	} else if (dist1 < servo_mid_dist && dist2 > servo_mid_dist && dist3 > servo_mid_dist) {
+		servo = SERVO_MID_VALUE + 100;
+		left_speed = motor_slow_speed;
+		right_speed = motor_slow_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+
+	// väga lähedal paremale servale, keerab rohkem vasakule
+	} else if (dist1 > servo_mid_dist && dist2 > servo_mid_dist && dist3 < servo_mid_dist) {
+		servo = SERVO_MID_VALUE - 100;
+		left_speed = motor_slow_speed;
+		right_speed = motor_slow_speed;
+		left_dir = DRIVE;
+		right_dir = DRIVE;
+
+	// tagurdab kui sõidab nurka kinni
+	} else if (dist1 < servo_min_dist || dist2 < servo_min_dist || dist3 < servo_min_dist) {
+		servo = SERVO_MID_VALUE;
+		left_speed = motor_very_slow_speed;
+		right_speed = motor_very_slow_speed;
+		left_dir = REVERSE;
+		right_dir = REVERSE;
+	}
+}
+
 void sense() {
 	//TOF kuulamine
 	dist1 = TOF_GetDistance(&sensor1);
@@ -165,11 +246,13 @@ void sense() {
 }
 
 void plan() {
-	drive();
+	//drive_by_motor_speed();
 
 }
 
 void act() {
+	correct();
+
 	sprintf(distanceStr1, "Distance 1: %d\n\r", dist1);
 	sprintf(distanceStr2, "Distance 2: %d\n\r", dist2);
 	sprintf(distanceStr3, "Distance 3: %d\n\r", dist3);
@@ -178,11 +261,16 @@ void act() {
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr2, strlen(distanceStr2), 100);
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr3, strlen(distanceStr3), 100);
 
+	//set left motor direction and speed
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, left_speed);
 	HAL_GPIO_WritePin(MOTOR_DIR_1_GPIO_Port, MOTOR_DIR_1_Pin, left_dir);
 
+	//set right motor direction and speed
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, right_speed);
 	HAL_GPIO_WritePin(MOTOR_DIR_2_GPIO_Port, MOTOR_DIR_2_Pin, right_dir);
+
+	//set servo angle
+	__HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, servo);
 }
 /* USER CODE END 0 */
 
