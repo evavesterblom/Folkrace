@@ -74,9 +74,9 @@ enum State {
 };
 
 // Constants
-int SERVO_MIN_VALUE = 1325;
+int SERVO_MIN_VALUE = 1225;
 int SERVO_MID_VALUE = 1450;
-int SERVO_MAX_VALUE = 1575;
+int SERVO_MAX_VALUE = 1625;
 // how to set servo position: __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 1220);
 
 char distanceStr1[200] = "wasd";
@@ -92,7 +92,7 @@ int right_speed = 200;
 
 // 1 -  forward | 0 - backwards
 int left_dir = 1;
-int right_dir = 0;
+int right_dir = 1;
 
 // servo angle
 int servo = 1450;
@@ -119,46 +119,6 @@ void init() {
 	TOF_BootSensor(&sensor3);
 }
 
-int min_dist1 = 50;
-int min_dist2 = 100;
-
-int slow_speed = 100;
-int fast_speed = 200;
-
-void drive_by_motor_speed() {
-	if (dist2 < min_dist1) {
-		left_speed = slow_speed;
-		right_speed = slow_speed;
-		left_dir = DRIVE;
-		right_dir = REVERSE;
-	} else if (dist1 < min_dist1) {
-		left_speed = slow_speed;
-		right_speed = slow_speed;
-		left_dir = DRIVE;
-		right_dir = REVERSE;
-	} else if (dist3 < min_dist1) {
-		left_speed = slow_speed;
-		right_speed = slow_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
-	} else if (dist1 < min_dist2) {
-		left_speed = fast_speed;
-		right_speed = slow_speed;
-		left_dir = DRIVE;
-		right_dir = DRIVE;
-	} else if(dist3 < min_dist2) {
-		left_speed = slow_speed;
-		right_speed = fast_speed;
-		left_dir = DRIVE;
-		right_dir = DRIVE;
-	} else {
-		left_speed = fast_speed;
-		right_speed = fast_speed;
-		left_dir = DRIVE;
-		right_dir = DRIVE;
-	}
-}
-
 void correct() {
 	if (servo > SERVO_MAX_VALUE) {
 		servo = SERVO_MAX_VALUE;
@@ -176,66 +136,55 @@ void correct() {
 		right_speed = 1000;
 	}
 
+	//left_dir = left_dir == 1 ? 0 : 1;
+
+	left_speed = 400;
+	right_speed = 400;
+
 }
 
-int servo_min_dist = 50;
-int servo_mid_dist = 100;
-int servo_max_dist = 150;
+int servo_min_dist = 110;
+int servo_mid_dist = 150;
+int servo_max_dist = 200;
 
-int motor_very_slow_speed = 70;
-int motor_slow_speed = 100;
-int motor_mid_speed = 150;
-int motor_high_speed = 200;
+int motor_very_slow_speed = 400;
+int motor_slow_speed = 400;
+int motor_mid_speed = 400;
+int motor_high_speed = 400;
 
 void drive_by_servo() {
-	// seinad on kaugel, sõidab otse
-	if (dist1 > servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
-		servo = SERVO_MID_VALUE;
-		left_speed = motor_high_speed;
-		right_speed = motor_high_speed;
-		left_dir = DRIVE;
-		right_dir = DRIVE;
-
 	// natuke lähedal vasakule servale, keerab natuke paremale
-	} else if (dist1 < servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
-		servo = SERVO_MID_VALUE + 50;
+	if (dist1 < servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
+		servo = SERVO_MID_VALUE + 100;
 		left_speed = motor_mid_speed;
 		right_speed = motor_mid_speed;
-		left_dir = DRIVE;
+		left_dir = REVERSE;
 		right_dir = DRIVE;
 
 	// natuke lähedal paremale servale, keerab natuke vasakule
 	}else if (dist1 > servo_max_dist && dist2 > servo_max_dist && dist3 < servo_max_dist) {
-		servo = SERVO_MID_VALUE - 50;
+		servo = SERVO_MID_VALUE - 100;
 		left_speed = motor_mid_speed;
 		right_speed = motor_mid_speed;
-		left_dir = DRIVE;
+		left_dir = REVERSE;
 		right_dir = DRIVE;
 
 	// väga lähedal vasakule servale, keerab rohkem paremale
-	} else if (dist1 < servo_mid_dist && dist2 > servo_mid_dist && dist3 > servo_mid_dist) {
-		servo = SERVO_MID_VALUE + 100;
-		left_speed = motor_slow_speed;
-		right_speed = motor_slow_speed;
-		left_dir = DRIVE;
-		right_dir = DRIVE;
-
-	// väga lähedal paremale servale, keerab rohkem vasakule
-	} else if (dist1 > servo_mid_dist && dist2 > servo_mid_dist && dist3 < servo_mid_dist) {
-		servo = SERVO_MID_VALUE - 100;
-		left_speed = motor_slow_speed;
-		right_speed = motor_slow_speed;
-		left_dir = DRIVE;
-		right_dir = DRIVE;
-
-	// tagurdab kui sõidab nurka kinni
-	} else if (dist1 < servo_min_dist || dist2 < servo_min_dist || dist3 < servo_min_dist) {
+	} else {
 		servo = SERVO_MID_VALUE;
-		left_speed = motor_very_slow_speed;
-		right_speed = motor_very_slow_speed;
+		left_speed = motor_mid_speed;
+		right_speed = motor_mid_speed;
 		left_dir = REVERSE;
-		right_dir = REVERSE;
+		right_dir = DRIVE;
 	}
+	// tagurdab kui sõidab nurka kinni
+//	} else if (dist1 < servo_min_dist || dist2 < servo_min_dist || dist3 < servo_min_dist) {
+//		servo = SERVO_MID_VALUE;
+//		left_speed = motor_very_slow_speed;
+//		right_speed = motor_very_slow_speed;
+//		left_dir = REVERSE;
+//		right_dir = REVERSE;
+//	}
 }
 
 void sense() {
@@ -254,13 +203,14 @@ void plan() {
 void act() {
 	correct();
 
-	sprintf(distanceStr1, "Distance 1: %d\n\r", dist1);
-	sprintf(distanceStr2, "Distance 2: %d\n\r", dist2);
-	sprintf(distanceStr3, "Distance 3: %d\n\r", dist3);
+	sprintf(distanceStr1, "L:%d       M:%d       R:%d \n\r", dist1, dist2, dist3);
+	//sprintf(distanceStr2, "Distance 2: %d\n\r", dist2);
+	//sprintf(distanceStr3, "Distance 3: %d\n\r", dist3);
 
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr1, strlen(distanceStr1), 100);
-	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr2, strlen(distanceStr2), 100);
-	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr3, strlen(distanceStr3), 100);
+	//HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr2, strlen(distanceStr2), 100);
+	//HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr3, strlen(distanceStr3), 100);
+
 
 	//set left motor direction and speed
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, left_speed);
@@ -318,9 +268,13 @@ int main(void)
   {
 	  sense();
 	  plan();
+	  //left_dir = 1;
+	  //right_dir = 1;
+	  //left_speed = 400;
+	  //right_speed = 400;
 	  act();
 
-	  HAL_Delay(1000);
+	  //HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
