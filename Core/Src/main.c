@@ -107,16 +107,12 @@ void init() {
 	HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
 
 	TOF_InitStruct(&sensor1, &hi2c1, 0x32, TOF_1_GPIO_Port, TOF_1_Pin);
-	TOF_InitStruct(&sensor2, &hi2c1, 0x33, TOF_2_GPIO_Port, TOF_2_Pin);
-	TOF_InitStruct(&sensor3, &hi2c1, 0x34, TOF_3_GPIO_Port, TOF_3_Pin);
+	TOF_InitStruct(&sensor2, &hi2c1, 0x34, TOF_2_GPIO_Port, TOF_2_Pin);
+	TOF_InitStruct(&sensor3, &hi2c1, 0x36, TOF_3_GPIO_Port, TOF_3_Pin);
 
-	TOF_TurnOff(&sensor1);
-	TOF_TurnOff(&sensor2);
-	TOF_TurnOff(&sensor3);
+	VL53L1X* sensors[] = {&sensor1, &sensor2, &sensor3};
+	TOF_BootMultipleSensors(sensors, 3);
 
-	TOF_BootSensor(&sensor1);
-	TOF_BootSensor(&sensor2);
-	TOF_BootSensor(&sensor3);
 }
 
 void correct() {
@@ -136,46 +132,48 @@ void correct() {
 		right_speed = 1000;
 	}
 
-	//left_dir = left_dir == 1 ? 0 : 1;
-
-	left_speed = 400;
-	right_speed = 400;
-
 }
 
-int servo_min_dist = 110;
-int servo_mid_dist = 150;
-int servo_max_dist = 200;
+int sensor_min_dist = 90;
+int sensor_mid_dist = 120;
+int sensor_max_dist = 210;
 
-int motor_very_slow_speed = 400;
-int motor_slow_speed = 400;
-int motor_mid_speed = 400;
-int motor_high_speed = 400;
 
 void drive_by_servo() {
+	left_speed = 400;
+	right_speed = 450;
+	left_dir = REVERSE;
+	right_dir = DRIVE;
 	// natuke lähedal vasakule servale, keerab natuke paremale
-	if (dist1 < servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
+	if (dist1 < sensor_max_dist && dist2 > sensor_max_dist && dist3 > sensor_max_dist) {
 		servo = SERVO_MID_VALUE + 100;
-		left_speed = motor_mid_speed;
-		right_speed = motor_mid_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
 
 	// natuke lähedal paremale servale, keerab natuke vasakule
-	}else if (dist1 > servo_max_dist && dist2 > servo_max_dist && dist3 < servo_max_dist) {
+	} else if (dist1 > sensor_max_dist && dist2 > sensor_max_dist && dist3 < sensor_max_dist) {
 		servo = SERVO_MID_VALUE - 100;
-		left_speed = motor_mid_speed;
-		right_speed = motor_mid_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
 
-	// väga lähedal vasakule servale, keerab rohkem paremale
-	} else {
+
+	// max keeramine vasakule
+	} else if (dist1 > sensor_mid_dist && dist2 > sensor_mid_dist && dist3 < sensor_mid_dist) {
+		servo = SERVO_MIN_VALUE;
+
+
+	// max keeramine paremale
+	} else if (dist1 < sensor_mid_dist && dist2 > sensor_mid_dist && dist3 > sensor_mid_dist) {
+		servo = SERVO_MAX_VALUE;
+
+
+	// tupik, sõidab tagasi väikse nurga all
+	}else if (dist2 < sensor_mid_dist) {
+		servo = SERVO_MID_VALUE - 50;
+		left_speed = 300;
+		right_speed = 300;
+		left_dir = DRIVE;
+		right_dir = REVERSE;
+
+	}else {
 		servo = SERVO_MID_VALUE;
-		left_speed = motor_mid_speed;
-		right_speed = motor_mid_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
+
 	}
 	// tagurdab kui sõidab nurka kinni
 //	} else if (dist1 < servo_min_dist || dist2 < servo_min_dist || dist3 < servo_min_dist) {
@@ -268,10 +266,6 @@ int main(void)
   {
 	  sense();
 	  plan();
-	  //left_dir = 1;
-	  //right_dir = 1;
-	  //left_speed = 400;
-	  //right_speed = 400;
 	  act();
 
 	  //HAL_Delay(1000);
