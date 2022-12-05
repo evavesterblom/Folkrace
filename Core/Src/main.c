@@ -77,6 +77,8 @@ enum State {
 int SERVO_MIN_VALUE = 1225;
 int SERVO_MID_VALUE = 1450;
 int SERVO_MAX_VALUE = 1625;
+
+int MAX_TURN_ANGLE = 45;
 // how to set servo position: __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 1220);
 
 char distanceStr1[200] = "wasd";
@@ -96,6 +98,7 @@ int right_dir = 1;
 
 // servo angle
 int servo = 1450;
+int servoTarget = 1450;
 
 void init() {
 	// Motor PWM signals
@@ -140,7 +143,6 @@ void correct() {
 
 	left_speed = 400;
 	right_speed = 400;
-
 }
 
 int servo_min_dist = 110;
@@ -151,6 +153,56 @@ int motor_very_slow_speed = 400;
 int motor_slow_speed = 400;
 int motor_mid_speed = 400;
 int motor_high_speed = 400;
+
+int sensDiff = 0;
+int sensDir = 0;
+
+double findTurnMagnitude(int sensorDiffMilliMeters) {
+    double sensorDiff = sensorDiffMilliMeters / 10;
+    sensDiff = sensorDiff;
+    double upper = (sensorDiff - 50);
+    upper = upper * upper * upper;
+    double lower = 4000;
+    double add = 28;
+    return upper / lower + add;
+}
+
+void setServoTurnLeft(double turnAngle) {
+    int turnRange = SERVO_MID_VALUE - SERVO_MIN_VALUE;
+    double servoDiff = turnAngle / MAX_TURN_ANGLE * turnRange;
+    servoTarget = SERVO_MID_VALUE - (int) servoDiff;
+}
+
+void setServoTurnRight(double turnAngle) {
+    int turnRange = SERVO_MAX_VALUE - SERVO_MID_VALUE;
+    double servoDiff = turnAngle / MAX_TURN_ANGLE * turnRange;
+    servoTarget = SERVO_MID_VALUE + (int) servoDiff;
+}
+
+void findServoTarget() {
+    int sensorDiff = dist1 - dist3;
+    int turnDirection = sensorDiff < 0 ? 1 : -1;
+    sensDir = turnDirection;
+    sensorDiff = sensorDiff < 0 ? -sensorDiff : sensorDiff;
+    double turnAngle = findTurnMagnitude(sensorDiff);
+    turnAngle = turnAngle < 0 ? 0 : turnAngle;
+    turnAngle = turnAngle > MAX_TURN_ANGLE ? MAX_TURN_ANGLE : turnAngle;
+    if (turnDirection < 0) setServoTurnLeft(turnAngle);
+    else setServoTurnRight(turnAngle);
+}
+
+int ADJUSTMENT_LIMIT = 150;
+
+void driveSmoothServo() {
+	findServoTarget();
+	int servoAdjustment = 1;
+	if (dist1 < ADJUSTMENT_LIMIT || dist3 < ADJUSTMENT_LIMIT) servoAdjustment = 5;
+	if (servo < servoTarget) servo += servoAdjustment;
+	else servo -= servoAdjustment;
+//	servo = servoTarget;
+	left_dir = REVERSE;
+	right_dir = DRIVE;
+}
 
 void drive_by_servo() {
 	// natuke lähedal vasakule servale, keerab natuke paremale
@@ -187,23 +239,38 @@ void drive_by_servo() {
 //	}
 }
 
+int SENSOR_ADJUSTMENT = 10;
+int rawDist1 = 200;
+int rawDist2 = 200;
+int rawDist3 = 200;
+
 void sense() {
 	//TOF kuulamine
-	dist1 = TOF_GetDistance(&sensor1);
-	dist2 = TOF_GetDistance(&sensor2);
-	dist3 = TOF_GetDistance(&sensor3);
+	rawDist1 = TOF_GetDistance(&sensor1);
+	rawDist2 = TOF_GetDistance(&sensor2);
+	rawDist3 = TOF_GetDistance(&sensor3);
+
+	// Smoothing
+	if (rawDist1 < dist1) dist1 -= SENSOR_ADJUSTMENT;
+	else dist1 += SENSOR_ADJUSTMENT;
+	if (rawDist2 < dist2) dist2 -= SENSOR_ADJUSTMENT;
+	else dist2 += SENSOR_ADJUSTMENT;
+	if (rawDist3 < dist3) dist3 -= SENSOR_ADJUSTMENT;
+	else dist3 += SENSOR_ADJUSTMENT;
 }
 
 void plan() {
 	//drive_by_motor_speed();
-	drive_by_servo();
+//	drive_by_servo();
+	driveSmoothServo();
 
 }
 
 void act() {
 	correct();
 
-	sprintf(distanceStr1, "L:%d       M:%d       R:%d \n\r", dist1, dist2, dist3);
+//	sprintf(distanceStr1, "L:%d       M:%d       R:%d \n\r", dist1, dist2, dist3);
+	sprintf(distanceStr1, "Diff:%d       Dir:%d       Target:%d \n\r", sensDiff, sensDir, servoTarget);
 	//sprintf(distanceStr2, "Distance 2: %d\n\r", dist2);
 	//sprintf(distanceStr3, "Distance 3: %d\n\r", dist3);
 

@@ -1,7 +1,7 @@
 VL53L1X/Src/vl53l1_platform.o: ../VL53L1X/Src/vl53l1_platform.c \
- C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_platform.h \
- C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_types.h \
- C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_error_codes.h \
+ D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_platform.h \
+ D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_types.h \
+ D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_error_codes.h \
  ../Core/Inc/main.h ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h \
  ../Core/Inc/stm32f0xx_hal_conf.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h \
@@ -31,11 +31,11 @@ VL53L1X/Src/vl53l1_platform.o: ../VL53L1X/Src/vl53l1_platform.c \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/VL53L1X.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/gpio.h
-C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_platform.h:
-C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_types.h:
-C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_error_codes.h:
+ D:/STM32CubeIDE/Viper/VL53L1X/VL53L1X.h ../Core/Inc/i2c.h \
+ ../Core/Inc/main.h ../Core/Inc/gpio.h
+D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_platform.h:
+D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_types.h:
+D:/STM32CubeIDE/Viper/VL53L1X/Inc/vl53l1_error_codes.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h:
 ../Core/Inc/stm32f0xx_hal_conf.h:
@@ -66,7 +66,7 @@ C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/Inc/vl53l1_error_codes.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
-C:/Users/Kasutaja/Documents/Robotiklubi/viper/VL53L1X/VL53L1X.h:
+D:/STM32CubeIDE/Viper/VL53L1X/VL53L1X.h:
 ../Core/Inc/i2c.h:
 ../Core/Inc/main.h:
 ../Core/Inc/gpio.h:
