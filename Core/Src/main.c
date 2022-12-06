@@ -89,8 +89,9 @@ uint16_t dist2 = 0;
 uint16_t dist3 = 0;
 
 // motors speed (max 1000)
-int left_speed = 200;
-int right_speed = 200;
+int left_speed = 400;
+int right_speed = 400;
+int targetSpeed = 400;
 
 // 1 -  forward | 0 - backwards
 int left_dir = 1;
@@ -141,8 +142,8 @@ void correct() {
 
 	//left_dir = left_dir == 1 ? 0 : 1;
 
-	left_speed = 400;
-	right_speed = 400;
+//	left_speed = 400;
+//	right_speed = 400;
 }
 
 int servo_min_dist = 110;
@@ -191,17 +192,50 @@ void findServoTarget() {
     else setServoTurnRight(turnAngle);
 }
 
+void findTargetSpeed() {
+	int avgDist = (dist1 + dist2 + dist3) / 3;
+	targetSpeed = avgDist * avgDist / 2000 + 400;
+	if (targetSpeed > 1000) targetSpeed = 1000;
+}
+
 int ADJUSTMENT_LIMIT = 150;
+int MID_CRASH_LIMIT = 120;
+int SIDE_CRASH_LIMIT = 50;
+int speedAdjustment = 10;
+int reverseCounter = 0;
 
 void driveSmoothServo() {
 	findServoTarget();
+//	findTargetSpeed();
+
+
+	left_dir = DRIVE;
+	right_dir = DRIVE;
+	if (dist2 < MID_CRASH_LIMIT || dist1 < SIDE_CRASH_LIMIT || dist3 < SIDE_CRASH_LIMIT) {
+		reverseCounter = 50;
+	}
+	if (reverseCounter > 0) {
+		reverseCounter--;
+		servoTarget = SERVO_MID_VALUE;
+		left_dir = REVERSE;
+		right_dir = REVERSE;
+	}
+
 	int servoAdjustment = 1;
 	if (dist1 < ADJUSTMENT_LIMIT || dist3 < ADJUSTMENT_LIMIT) servoAdjustment = 5;
 	if (servo < servoTarget) servo += servoAdjustment;
 	else servo -= servoAdjustment;
 //	servo = servoTarget;
-	left_dir = REVERSE;
-	right_dir = DRIVE;
+
+
+	// Adjust speed
+	if (left_speed < targetSpeed) {
+		left_speed += speedAdjustment;
+		right_speed = left_speed;
+	} else {
+		left_speed -= speedAdjustment;
+		right_speed = left_speed;
+	}
 }
 
 void drive_by_servo() {
