@@ -76,7 +76,7 @@ enum State {
 // Constants
 int SERVO_MIN_VALUE = 1225;
 int SERVO_MID_VALUE = 1450;
-int SERVO_MAX_VALUE = 1625;
+int SERVO_MAX_VALUE = 1675;
 // how to set servo position: __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 1220);
 
 char distanceStr1[200] = "wasd";
@@ -134,56 +134,107 @@ void correct() {
 
 }
 
-int sensor_min_dist = 90;
-int sensor_mid_dist = 120;
-int sensor_max_dist = 210;
-
-
-void drive_by_servo() {
-	left_speed = 400;
-	right_speed = 450;
-	left_dir = REVERSE;
+int d1 = 200;
+int d2 = 300;
+int d3 = 400;
+int d4 = 550;
+int d5 = 700;
+int d6 = 800;
+void drive_by_servo(){
+	left_speed = 600;
+	right_speed = 800;
+	left_dir = DRIVE;
 	right_dir = DRIVE;
-	// natuke lähedal vasakule servale, keerab natuke paremale
-	if (dist1 < sensor_max_dist && dist2 > sensor_max_dist && dist3 > sensor_max_dist) {
-		servo = SERVO_MID_VALUE + 100;
-
-	// natuke lähedal paremale servale, keerab natuke vasakule
-	} else if (dist1 > sensor_max_dist && dist2 > sensor_max_dist && dist3 < sensor_max_dist) {
-		servo = SERVO_MID_VALUE - 100;
-
-
-	// max keeramine vasakule
-	} else if (dist1 > sensor_mid_dist && dist2 > sensor_mid_dist && dist3 < sensor_mid_dist) {
-		servo = SERVO_MIN_VALUE;
-
-
-	// max keeramine paremale
-	} else if (dist1 < sensor_mid_dist && dist2 > sensor_mid_dist && dist3 > sensor_mid_dist) {
-		servo = SERVO_MAX_VALUE;
-
-
-	// tupik, sõidab tagasi väikse nurga all
-	}else if (dist2 < sensor_mid_dist) {
-		servo = SERVO_MID_VALUE - 50;
-		left_speed = 300;
-		right_speed = 300;
-		left_dir = DRIVE;
+	if ((dist1 < d1 && dist3 < d1) || dist2 < d1) {
+		left_dir = REVERSE;
 		right_dir = REVERSE;
-
-	}else {
+		servo = SERVO_MIN_VALUE;
+	} else if (dist1 < d1 || dist3 < d1 || dist2 < d1) {
+		if (dist2 < d1) {
+			if (dist1 < dist3) {
+				servo = SERVO_MAX_VALUE;
+			} else {
+				servo = SERVO_MIN_VALUE;
+			}
+		}
+		else if (dist1 < d1) {
+			servo = SERVO_MAX_VALUE;
+		} else if (dist3 < d1) {
+			servo = SERVO_MIN_VALUE;
+		}
+	} else if (dist1 < d2 || dist3 < d2 || dist2 < d2) {
+		if (dist2 < d2) {
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 200;
+			} else {
+				servo = SERVO_MID_VALUE - 200;
+			}
+		} else if (dist1 < d2) {
+			servo = SERVO_MID_VALUE + 200;
+		} else if (dist3 < d2) {
+			servo = SERVO_MID_VALUE - 200;
+		}
+	} else if (dist1 < d3 || dist3 < d3 || dist2 < d3) {
+		if (dist2 < d3) {
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 150;
+			} else {
+				servo = SERVO_MID_VALUE - 100;
+			}
+		} else if (dist1 < d3 && dist3 < d3) {
+			servo = SERVO_MID_VALUE;
+		} else if (dist1 < d3) {
+			servo = SERVO_MID_VALUE + 150;
+		} else if (dist3 < d3) {
+			servo = SERVO_MID_VALUE - 150;
+		}
+	} else if (dist1 < d4 || dist3 < d4 || dist2 < d4) {
+		if (dist2 < d4) {
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 100;
+			} else {
+				servo = SERVO_MID_VALUE - 100;
+			}
+		} else if (dist1 < d4 && dist3 < d4) {
+			servo = SERVO_MID_VALUE;
+		} else if (dist1 < d4) {
+			servo = SERVO_MID_VALUE + 100;
+		} else if (dist3 < d4) {
+			servo = SERVO_MID_VALUE - 100;
+		}
+	} else if (dist1 < d5 || dist3 < d5 || dist2 < d5) {
+		if (dist2 < d5) { // siia oli unustatud d2 vb sp töötas
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 70;
+			} else {
+				servo = SERVO_MID_VALUE - 70;
+			}
+		} else if (dist1 < d5 && dist3 < d5) {
+			servo = SERVO_MID_VALUE;
+		} else if (dist1 < d5) {
+			servo = SERVO_MID_VALUE + 70;
+		} else if (dist3 < d5) {
+			servo = SERVO_MID_VALUE - 70;
+		}
+	} else if (dist1 < d6 || dist3 < d6 || dist2 < d6) {
+		if (dist2 < d6) { // siia oli unustatud d2 vb sp töötas
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 50;
+			} else {
+				servo = SERVO_MID_VALUE - 50;
+			}
+		} else if (dist1 < d6 && dist3 < d6) {
+			servo = SERVO_MID_VALUE;
+		} else if (dist1 < d6) {
+			servo = SERVO_MID_VALUE + 50;
+		} else if (dist3 < d6) {
+			servo = SERVO_MID_VALUE - 50;
+		}
+	} else {
 		servo = SERVO_MID_VALUE;
-
 	}
-	// tagurdab kui sõidab nurka kinni
-//	} else if (dist1 < servo_min_dist || dist2 < servo_min_dist || dist3 < servo_min_dist) {
-//		servo = SERVO_MID_VALUE;
-//		left_speed = motor_very_slow_speed;
-//		right_speed = motor_very_slow_speed;
-//		left_dir = REVERSE;
-//		right_dir = REVERSE;
-//	}
 }
+
 
 void sense() {
 	//TOF kuulamine
@@ -202,13 +253,8 @@ void act() {
 	correct();
 
 	sprintf(distanceStr1, "L:%d       M:%d       R:%d \n\r", dist1, dist2, dist3);
-	//sprintf(distanceStr2, "Distance 2: %d\n\r", dist2);
-	//sprintf(distanceStr3, "Distance 3: %d\n\r", dist3);
 
 	HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr1, strlen(distanceStr1), 100);
-	//HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr2, strlen(distanceStr2), 100);
-	//HAL_UART_Transmit(&huart2, (uint8_t*)distanceStr3, strlen(distanceStr3), 100);
-
 
 	//set left motor direction and speed
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, left_speed);
