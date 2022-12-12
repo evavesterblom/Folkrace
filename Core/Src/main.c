@@ -76,7 +76,7 @@ enum State {
 // Constants
 int SERVO_MIN_VALUE = 1225;
 int SERVO_MID_VALUE = 1450;
-int SERVO_MAX_VALUE = 1625;
+int SERVO_MAX_VALUE = 1675;
 
 int MAX_TURN_ANGLE = 45;
 // how to set servo position: __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 1220);
@@ -89,8 +89,9 @@ uint16_t dist2 = 0;
 uint16_t dist3 = 0;
 
 // motors speed (max 1000)
-int left_speed = 400;
-int right_speed = 400;
+// 400 ja 550
+int left_speed = 500;
+int right_speed = 700;
 int targetSpeed = 400;
 
 // 1 -  forward | 0 - backwards
@@ -212,7 +213,7 @@ void driveSmoothServo() {
 	left_dir = DRIVE;
 	right_dir = DRIVE;
 	if (dist2 < MID_CRASH_LIMIT || dist1 < SIDE_CRASH_LIMIT || dist3 < SIDE_CRASH_LIMIT) {
-		reverseCounter = 50;
+		reverseCounter = 100;
 	}
 	if (reverseCounter > 0) {
 		reverseCounter--;
@@ -221,21 +222,21 @@ void driveSmoothServo() {
 		right_dir = REVERSE;
 	}
 
-	int servoAdjustment = 1;
-	if (dist1 < ADJUSTMENT_LIMIT || dist3 < ADJUSTMENT_LIMIT) servoAdjustment = 5;
+	int servoAdjustment = 3;
+	if (dist1 < ADJUSTMENT_LIMIT || dist3 < ADJUSTMENT_LIMIT) servoAdjustment = 10;
 	if (servo < servoTarget) servo += servoAdjustment;
 	else servo -= servoAdjustment;
 //	servo = servoTarget;
 
 
 	// Adjust speed
-	if (left_speed < targetSpeed) {
-		left_speed += speedAdjustment;
-		right_speed = left_speed;
-	} else {
-		left_speed -= speedAdjustment;
-		right_speed = left_speed;
-	}
+//	if (left_speed < targetSpeed) {
+//		left_speed += speedAdjustment;
+//		right_speed = left_speed;
+//	} else {
+//		left_speed -= speedAdjustment;
+//		right_speed = left_speed;
+//	}
 }
 
 void drive_by_servo() {
@@ -273,7 +274,8 @@ void drive_by_servo() {
 //	}
 }
 
-int SENSOR_ADJUSTMENT = 10;
+int MAX_SENSOR_DISTANCE = 1000;
+int SENSOR_ADJUSTMENT = 20;
 int rawDist1 = 200;
 int rawDist2 = 200;
 int rawDist3 = 200;
@@ -285,12 +287,27 @@ void sense() {
 	rawDist3 = TOF_GetDistance(&sensor3);
 
 	// Smoothing
-	if (rawDist1 < dist1) dist1 -= SENSOR_ADJUSTMENT;
+//	if (rawDist1 < dist1) dist1 -= SENSOR_ADJUSTMENT;
+//	else dist1 += SENSOR_ADJUSTMENT;
+//	if (rawDist2 < dist2) dist2 -= SENSOR_ADJUSTMENT;
+//	else dist2 += SENSOR_ADJUSTMENT;
+//	if (rawDist3 < dist3) dist3 -= SENSOR_ADJUSTMENT;
+//	else dist3 += SENSOR_ADJUSTMENT;
+
+	if (rawDist1 < dist1) dist1 = rawDist1;
 	else dist1 += SENSOR_ADJUSTMENT;
-	if (rawDist2 < dist2) dist2 -= SENSOR_ADJUSTMENT;
+	if (rawDist2 < dist2) dist2 = rawDist2;
 	else dist2 += SENSOR_ADJUSTMENT;
-	if (rawDist3 < dist3) dist3 -= SENSOR_ADJUSTMENT;
+	if (rawDist3 < dist3) dist3 = rawDist3;
 	else dist3 += SENSOR_ADJUSTMENT;
+
+//	dist1 = rawDist1;
+//	dist2 = rawDist2;
+//	dist3 = rawDist3;
+
+	if (dist1 > MAX_SENSOR_DISTANCE) dist1 = MAX_SENSOR_DISTANCE;
+	if (dist2 > MAX_SENSOR_DISTANCE) dist2 = MAX_SENSOR_DISTANCE;
+	if (dist3 > MAX_SENSOR_DISTANCE) dist3 = MAX_SENSOR_DISTANCE;
 }
 
 void plan() {
