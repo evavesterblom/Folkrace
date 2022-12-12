@@ -140,9 +140,11 @@ int d3 = 400;
 int d4 = 550;
 int d5 = 700;
 int d6 = 800;
+int d7 = 900;
+int d8 = 1000;
 void drive_by_servo(){
-	left_speed = 600;
-	right_speed = 800;
+	left_speed = 400;
+	right_speed = 550;
 	left_dir = DRIVE;
 	right_dir = DRIVE;
 	if ((dist1 < d1 && dist3 < d1) || dist2 < d1) {
@@ -205,30 +207,58 @@ void drive_by_servo(){
 	} else if (dist1 < d5 || dist3 < d5 || dist2 < d5) {
 		if (dist2 < d5) { // siia oli unustatud d2 vb sp töötas
 			if (dist1 < dist3) {
-				servo = SERVO_MID_VALUE + 70;
+				servo = SERVO_MID_VALUE + 80;
 			} else {
-				servo = SERVO_MID_VALUE - 70;
+				servo = SERVO_MID_VALUE - 80;
 			}
 		} else if (dist1 < d5 && dist3 < d5) {
 			servo = SERVO_MID_VALUE;
 		} else if (dist1 < d5) {
-			servo = SERVO_MID_VALUE + 70;
+			servo = SERVO_MID_VALUE + 80;
 		} else if (dist3 < d5) {
-			servo = SERVO_MID_VALUE - 70;
+			servo = SERVO_MID_VALUE - 80;
 		}
 	} else if (dist1 < d6 || dist3 < d6 || dist2 < d6) {
 		if (dist2 < d6) { // siia oli unustatud d2 vb sp töötas
 			if (dist1 < dist3) {
-				servo = SERVO_MID_VALUE + 50;
+				servo = SERVO_MID_VALUE + 60;
 			} else {
-				servo = SERVO_MID_VALUE - 50;
+				servo = SERVO_MID_VALUE - 60;
 			}
 		} else if (dist1 < d6 && dist3 < d6) {
 			servo = SERVO_MID_VALUE;
 		} else if (dist1 < d6) {
-			servo = SERVO_MID_VALUE + 50;
+			servo = SERVO_MID_VALUE + 60;
 		} else if (dist3 < d6) {
-			servo = SERVO_MID_VALUE - 50;
+			servo = SERVO_MID_VALUE - 60;
+		}
+	} else if (dist1 < d7 || dist3 < d7 || dist2 < d7) {
+		if (dist2 < d7) { // siia oli unustatud d2 vb sp töötas
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 45;
+			} else {
+				servo = SERVO_MID_VALUE - 45;
+			}
+		} else if (dist1 < d7 && dist3 < d7) {
+			servo = SERVO_MID_VALUE;
+		} else if (dist1 < d7) {
+			servo = SERVO_MID_VALUE + 45;
+		} else if (dist3 < d7) {
+			servo = SERVO_MID_VALUE - 45;
+		}
+	} else if (dist1 < d8 || dist3 < d8 || dist2 < d8) {
+		if (dist2 < d8) { // siia oli unustatud d2 vb sp töötas
+			if (dist1 < dist3) {
+				servo = SERVO_MID_VALUE + 30;
+			} else {
+				servo = SERVO_MID_VALUE - 30;
+			}
+		} else if (dist1 < d8 && dist3 < d8) {
+			servo = SERVO_MID_VALUE;
+		} else if (dist1 < d8) {
+			servo = SERVO_MID_VALUE + 30;
+		} else if (dist3 < d8) {
+			servo = SERVO_MID_VALUE - 30;
 		}
 	} else {
 		servo = SERVO_MID_VALUE;
