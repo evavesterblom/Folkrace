@@ -89,9 +89,9 @@ uint16_t dist2 = 0;
 uint16_t dist3 = 0;
 
 // motors speed (max 1000)
-// 400 ja 550
-int left_speed = 500;
-int right_speed = 700;
+// 400 ja 550 voi 500 ja 800 voi 700 ja 1000?
+int left_speed = 700;
+int right_speed = 1000;
 int targetSpeed = 400;
 
 // 1 -  forward | 0 - backwards
@@ -101,6 +101,16 @@ int right_dir = 1;
 // servo angle
 int servo = 1450;
 int servoTarget = 1450;
+
+
+
+
+
+int MODE = 2;
+
+
+
+
 
 void init() {
 	// Motor PWM signals
@@ -122,6 +132,17 @@ void init() {
 	TOF_BootSensor(&sensor1);
 	TOF_BootSensor(&sensor2);
 	TOF_BootSensor(&sensor3);
+
+	if (MODE == 0) {
+		left_speed = 400;
+		right_speed = 550;
+	} else if (MODE == 1) {
+		left_speed = 500;
+		right_speed = 800;
+	} else if (MODE == 2) {
+		left_speed = 700;
+		right_speed = 1000;
+	}
 }
 
 void correct() {
@@ -141,20 +162,11 @@ void correct() {
 		right_speed = 1000;
 	}
 
-	//left_dir = left_dir == 1 ? 0 : 1;
-
-//	left_speed = 400;
-//	right_speed = 400;
 }
 
 int servo_min_dist = 110;
 int servo_mid_dist = 150;
 int servo_max_dist = 200;
-
-int motor_very_slow_speed = 400;
-int motor_slow_speed = 400;
-int motor_mid_speed = 400;
-int motor_high_speed = 400;
 
 int sensDiff = 0;
 int sensDir = 0;
@@ -170,6 +182,11 @@ double findTurnMagnitude(int sensorDiffMilliMeters) {
 }
 
 void setServoTurnLeft(double turnAngle) {
+	if (MODE == 1) {
+		turnAngle *= 1.3;
+	} else if (MODE == 2) {
+		turnAngle *= 1.5;
+	}
     int turnRange = SERVO_MID_VALUE - SERVO_MIN_VALUE;
     double servoDiff = turnAngle / MAX_TURN_ANGLE * turnRange;
     servoTarget = SERVO_MID_VALUE - (int) servoDiff;
@@ -193,11 +210,11 @@ void findServoTarget() {
     else setServoTurnRight(turnAngle);
 }
 
-void findTargetSpeed() {
-	int avgDist = (dist1 + dist2 + dist3) / 3;
-	targetSpeed = avgDist * avgDist / 2000 + 400;
-	if (targetSpeed > 1000) targetSpeed = 1000;
-}
+//void findTargetSpeed() {
+//	int avgDist = (dist1 + dist2 + dist3) / 3;
+//	targetSpeed = avgDist * avgDist / 2000 + 400;
+//	if (targetSpeed > 1000) targetSpeed = 1000;
+//}
 
 int ADJUSTMENT_LIMIT = 150;
 int MID_CRASH_LIMIT = 120;
@@ -213,7 +230,7 @@ void driveSmoothServo() {
 	left_dir = DRIVE;
 	right_dir = DRIVE;
 	if (dist2 < MID_CRASH_LIMIT || dist1 < SIDE_CRASH_LIMIT || dist3 < SIDE_CRASH_LIMIT) {
-		reverseCounter = 100;
+		reverseCounter = 200;
 	}
 	if (reverseCounter > 0) {
 		reverseCounter--;
@@ -239,41 +256,6 @@ void driveSmoothServo() {
 //	}
 }
 
-void drive_by_servo() {
-	// natuke lähedal vasakule servale, keerab natuke paremale
-	if (dist1 < servo_max_dist && dist2 > servo_max_dist && dist3 > servo_max_dist) {
-		servo = SERVO_MID_VALUE + 100;
-		left_speed = motor_mid_speed;
-		right_speed = motor_mid_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
-
-	// natuke lähedal paremale servale, keerab natuke vasakule
-	}else if (dist1 > servo_max_dist && dist2 > servo_max_dist && dist3 < servo_max_dist) {
-		servo = SERVO_MID_VALUE - 100;
-		left_speed = motor_mid_speed;
-		right_speed = motor_mid_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
-
-	// väga lähedal vasakule servale, keerab rohkem paremale
-	} else {
-		servo = SERVO_MID_VALUE;
-		left_speed = motor_mid_speed;
-		right_speed = motor_mid_speed;
-		left_dir = REVERSE;
-		right_dir = DRIVE;
-	}
-	// tagurdab kui sõidab nurka kinni
-//	} else if (dist1 < servo_min_dist || dist2 < servo_min_dist || dist3 < servo_min_dist) {
-//		servo = SERVO_MID_VALUE;
-//		left_speed = motor_very_slow_speed;
-//		right_speed = motor_very_slow_speed;
-//		left_dir = REVERSE;
-//		right_dir = REVERSE;
-//	}
-}
-
 int MAX_SENSOR_DISTANCE = 1000;
 int SENSOR_ADJUSTMENT = 20;
 int rawDist1 = 200;
@@ -294,16 +276,19 @@ void sense() {
 //	if (rawDist3 < dist3) dist3 -= SENSOR_ADJUSTMENT;
 //	else dist3 += SENSOR_ADJUSTMENT;
 
-	if (rawDist1 < dist1) dist1 = rawDist1;
-	else dist1 += SENSOR_ADJUSTMENT;
-	if (rawDist2 < dist2) dist2 = rawDist2;
-	else dist2 += SENSOR_ADJUSTMENT;
-	if (rawDist3 < dist3) dist3 = rawDist3;
-	else dist3 += SENSOR_ADJUSTMENT;
+	if (MODE == 2) {
+		dist1 = rawDist1;
+		dist2 = rawDist2;
+		dist3 = rawDist3;
+	} else {
+		if (rawDist1 < dist1) dist1 = rawDist1;
+		else dist1 += SENSOR_ADJUSTMENT;
+		if (rawDist2 < dist2) dist2 = rawDist2;
+		else dist2 += SENSOR_ADJUSTMENT;
+		if (rawDist3 < dist3) dist3 = rawDist3;
+		else dist3 += SENSOR_ADJUSTMENT;
+	}
 
-//	dist1 = rawDist1;
-//	dist2 = rawDist2;
-//	dist3 = rawDist3;
 
 	if (dist1 > MAX_SENSOR_DISTANCE) dist1 = MAX_SENSOR_DISTANCE;
 	if (dist2 > MAX_SENSOR_DISTANCE) dist2 = MAX_SENSOR_DISTANCE;
