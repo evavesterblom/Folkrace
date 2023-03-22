@@ -1,5 +1,8 @@
-# Folkrace is the fun project
-## Team project, where small folkrace machine was built from scratch
+## Folkrace is the fun project
 
-Team members: Rainer, Evgenia and Deniel
+Team project, where small folkrace machine was built from scratch
+
+**Team members:** Rainer, Evgenia and Deniel
+
+
 
